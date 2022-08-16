@@ -1,31 +1,33 @@
 package com.ikhokha.techcheck;
 
 import java.io.File;
-import java.util.HashMap;
+
 import java.util.Map;
 import java.util.concurrent.*;
 
 public class Main {
 	private static Map<String, Integer> totalResults = new ConcurrentHashMap<>();
-	private static boolean debugEnabled = false;
+	private static boolean debugEnabled = false;//Flag to enable debug log, thus by handling log size
 
 	public static void main(String[] args) {
 
 		try{
 			File docPath = new File("docs");
-			if(docPath.length()>0){
+			if(docPath.length()>0){//Run the logic is there are files.
 				File[] commentFiles = docPath.listFiles((d, n) -> n.endsWith(".txt"));
 
 				int totalFiles = commentFiles.length;
 				System.out.println("Total Files -> "+totalFiles);
 
+				//Get the actual available process allocated for the JVM, allocate half to core pool size
 				int corePoolSize = (Runtime.getRuntime().availableProcessors()/2);
-				int maxPoolSize = corePoolSize * 2;
+				int maxPoolSize = corePoolSize * 2;//
 
 				System.out.println("Number of processors available to the Java Virtual Machine: "+Runtime.getRuntime().availableProcessors());
 				System.out.println("corePoolSize -> "+corePoolSize);
 				System.out.println("maxPoolSize -> "+maxPoolSize);
 
+				//Thread Setup
 				ThreadPoolExecutor threadPoolExecutor =
 						new ThreadPoolExecutor(corePoolSize,
 								maxPoolSize,
@@ -34,6 +36,7 @@ public class Main {
 								new LinkedBlockingQueue<>(),
 								Executors.defaultThreadFactory());
 
+				//Pooling execution
 				for (File commentFile : commentFiles) {
 					Runnable workerRunnable = new CommentsAnalyserRunnable(commentFile);
 					threadPoolExecutor.execute(workerRunnable);
@@ -74,6 +77,9 @@ public class Main {
 
 	}
 
+	/**
+	 * Runnable to handle the file reading and analysing
+	 */
 	public static class CommentsAnalyserRunnable implements Runnable {
 		private final File commentFile;
 

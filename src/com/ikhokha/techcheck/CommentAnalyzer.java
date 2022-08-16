@@ -2,16 +2,7 @@ package com.ikhokha.techcheck;
 
 import com.ikhokha.techcheck.enums.MetricEnums;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
+import java.io.*;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -40,11 +31,12 @@ public class CommentAnalyzer {
 				} else{
 					final String filterItem = line;
 
+					//Loading the list of items from ENUM, so that it can be configured later.
 					MetricEnums.stream()
 							.forEach(i -> {
 								if(filterItem.contains(i.getItemToBeFiltered())){
 									incOccurrence(resultsMap, i.getMetricName());
-								};
+								}
 							});
 
 				}
